@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mars Visit Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input, select, textarea, button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mars Visit Application Form</h1>
+    <div class="container">
+        <h2 id="form-title">Personal Information</h2>
+
+        <form id="stage1">
+            <input type="text" name="name" placeholder="Full Name" required><br>
+            <input type="date" name="dob" placeholder="Date of Birth" required><br>
+            <input type="text" name="nationality" placeholder="Nationality" required><br>
+            <input type="email" name="email" placeholder="Email" required><br>
+            <input type="tel" name="phone" placeholder="Phone" required><br>
+            <button type="button" onclick="validateStage(1)">Next</button>
+        </form>
+
+        <form id="stage2" class="hidden">
+            <input type="date" id="departure" name="departure" placeholder="Departure Date" required><br>
+            <input type="date" id="return" name="return" placeholder="Return Date" required><br>
+            <span class="error" id="date-error"></span><br>
+            <select name="accommodation" required>
+                <option value="">Select Accommodation</option>
+                <option>Space Hotel</option>
+                <option>Martian Base</option>
+            </select><br>
+            <textarea name="preferences" placeholder="Special Requests or Preferences"></textarea><br>
+            <button type="button" onclick="previousStage(0)">Back</button>
+            <button type="button" onclick="validateStage(2)">Next</button>
+        </form>
+
+        <form id="stage3" class="hidden">
+            <label>Health Declaration:</label>
+            <select name="healthDeclaration" required>
+                <option value="">Select</option>
+                <option>Yes</option>
+                <option>No</option>
+            </select><br>
+            <input type="text" name="emergencyContact" placeholder="Emergency Contact Information" required><br>
+            <textarea name="medicalConditions" placeholder="Any Medical Conditions (if applicable)"></textarea><br>
+            <button type="button" onclick="previousStage(1)">Back</button>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        let currentStage = 0;
+        const stages = ["stage1", "stage2", "stage3"];
+        const titles = ["Personal Information", "Travel Preferences", "Health and Safety"];
+
+        function validateStage(stage) {
+            const form = document.getElementById(stages[currentStage]);
+            if (form.checkValidity()) {
+                if (currentStage === 1) {
+                    const departureDate = new Date(document.getElementById("departure").value);
+                    const returnDate = new Date(document.getElementById("return").value);
+                    if (returnDate < departureDate) {
+                        document.getElementById("date-error").textContent = "Return date cannot be earlier than departure date.";
+                        return;
+                    } else {
+                        document.getElementById("date-error").textContent = "";
+                    }
+                }
+                nextStage(stage);
+            } else {
+                form.reportValidity();
+            }
+        }
+
+        function nextStage(stage) {
+            document.getElementById(stages[currentStage]).classList.add("hidden");
+            document.getElementById(stages[stage]).classList.remove("hidden");
+            document.getElementById("form-title").innerText = titles[stage];
+            currentStage = stage;
+        }
+
+        function previousStage(stage) {
+            nextStage(stage);
+        }
+
+        document.getElementById("stage3").onsubmit = function(event) {
+            event.preventDefault();
+            alert("Application Submitted Successfully!");
+            resetForm();
+        };
+
+        function resetForm() {
+            // Clear all form inputs
+            document.querySelectorAll("form").forEach(form => form.reset());
+
+            // Return to the first stage
+            currentStage = 0;
+            stages.forEach(stage => document.getElementById(stage).classList.add("hidden"));
+            document.getElementById(stages[0]).classList.remove("hidden");
+            document.getElementById("form-title").innerText = titles[0];
+        }
+    </script>
+</body>
+</html>
